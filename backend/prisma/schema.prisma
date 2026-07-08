@@ -1,0 +1,54 @@
+// ISMS Prisma schema.
+// The database itself is created by backend/db/init/01-schema.sql
+// (raw SQL is required for the PostGIS extension and GiST indexes).
+// This schema mirrors those tables for the typed Prisma client.
+// Geometry columns are `Unsupported` — all spatial reads/writes go
+// through $queryRaw / $executeRaw with PostGIS functions.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Layer {
+  id          Int        @id @default(autoincrement())
+  type        String     @unique
+  name        String
+  nameAr      String?    @map("name_ar")
+  description String?
+  color       String     @default("#3b82f6")
+  geometry    String     @default("POINT")
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz()
+  locations   Location[]
+
+  @@map("layers")
+}
+
+model Location {
+  id         Int      @id @default(autoincrement())
+  name       String
+  nameAr     String?  @map("name_ar")
+  layerId    Int?     @map("layer_id")
+  layer      Layer?   @relation(fields: [layerId], references: [id], onDelete: SetNull)
+  properties Json     @default("{}")
+  geom       Unsupported("geometry(Geometry, 4326)")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt  DateTime @default(now()) @map("updated_at") @db.Timestamptz()
+
+  @@index([layerId], map: "locations_layer_idx")
+  @@map("locations")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("viewer")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("users")
+}
