@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  @apply bg-night text-paper font-sans antialiased;
+}
+
+.maplibregl-popup-content {
+  @apply bg-panel text-paper border border-edge rounded-lg shadow-xl px-4 py-3 font-sans;
+}
+.maplibregl-popup-tip {
+  border-top-color: #131c26 !important;
+  border-bottom-color: #131c26 !important;
+}
+.maplibregl-popup-close-button {
+  @apply text-mist text-lg px-2;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-edge rounded;
+}
